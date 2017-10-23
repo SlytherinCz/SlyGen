@@ -1,0 +1,28 @@
+{
+  "type":"relational",
+  "driver":"mysql",
+  "name":"test",
+  "resources": [
+    {
+      "name":"resource_1",
+      "options" : [
+        {
+          "type":"collation",
+          "value":"utf-8"
+        }
+      ],
+      "indexes": [
+        {
+          "type": "primary",
+          "column":"column_1"
+        }
+      ],
+      "columns":[
+        {
+          "name": "column_1",
+          "dataType" : "text"
+        }
+      ]
+    }
+  ]
+}

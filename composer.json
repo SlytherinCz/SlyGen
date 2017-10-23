@@ -1,0 +1,17 @@
+{
+  "name": "slytherincz/slygen",
+  "description": "CRUD REST Api generator",
+  "require": {
+    "php": "~7.0.0",
+    "symfony/console": "3.2.6",
+    "symfony/yaml": "3.2.6",
+    "symfony/dependency-injection": "3.2.6",
+    "symfony/config": "3.2.6",
+    "nette/php-generator": "3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "SlytherinCz\\SlyGen\\": "src/"
+    }
+  }
+}

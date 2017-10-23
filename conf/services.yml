@@ -1,0 +1,43 @@
+services:
+  console.generator:
+    class: SlytherinCz\SlyGen\Command\GeneratorCommand
+    arguments:
+      - "@factory.schemaFactory"
+
+  factory.primaryKey:
+    class: SlytherinCz\SlyGen\Factories\PrimaryKeyIndexFactory
+
+  factory.indexFactory:
+    class: SlytherinCz\SlyGen\Factories\IndexFactory
+    arguments:
+      q:
+       - "@factory.primaryKey"
+
+  factory.schemaFactory:
+    class: SlytherinCz\SlyGen\Factories\SchemaFactory
+    arguments:
+        - "@factory.resourceCollectionFactory"
+
+  factory.resourceCollectionFactory:
+    class: SlytherinCz\SlyGen\Factories\ResourceCollectionFactory
+    arguments:
+      - "@factory.resourceFactory"
+
+  factory.resourceFactory:
+    class: SlytherinCz\SlyGen\Factories\ResourceFactory
+    arguments:
+      - "@factory.columnCollectionFactory"
+      - "@factory.indexCollectionFactory"
+
+  factory.columnCollectionFactory:
+    class: SlytherinCz\SlyGen\Factories\ColumnCollectionFactory
+    arguments:
+      - "@factory.columnFactory"
+
+  factory.indexCollectionFactory:
+    class: SlytherinCz\SlyGen\Factories\IndexCollectionFactory
+    arguments:
+      - "@factory.indexFactory"
+
+  factory.columnFactory:
+    class: SlytherinCz\SlyGen\Factories\ColumnFactory
