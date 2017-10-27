@@ -27,6 +27,8 @@ class SchemaFactory
             $source->type,
             $source->driver,
             $source->name,
+            $source->credentials,
+            $source->outputFolder,
             $this->resourceCollectionFactory->fromArray($source->resources)
         );
     }

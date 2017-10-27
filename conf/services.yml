@@ -3,6 +3,9 @@ services:
     class: SlytherinCz\SlyGen\Command\GeneratorCommand
     arguments:
       - "@factory.schemaFactory"
+      - "@service.generator.credentials"
+      - "@service.generator.services"
+      - "@service.fileWriter"
 
   factory.primaryKey:
     class: SlytherinCz\SlyGen\Factories\PrimaryKeyIndexFactory
@@ -41,3 +44,35 @@ services:
 
   factory.columnFactory:
     class: SlytherinCz\SlyGen\Factories\ColumnFactory
+
+  service.twigLoader:
+    class: Twig_Loader_Filesystem
+    arguments:
+      - "src/Templates"
+    calls:
+      - method: addPath
+        arguments:
+         - "src/Templates/Dependency"
+
+  service.twig:
+    class: Twig_Environment
+    arguments:
+      - "@service.twigLoader"
+
+  service.fileWriter:
+    class: SlytherinCz\SlyGen\Services\FileWriter
+
+  service.generator.bootstrap:
+    class: SlytherinCz\SlyGen\Services\BootstrapGenerator
+    arguments:
+      - "@service.twig"
+
+  service.generator.credentials:
+      class: SlytherinCz\SlyGen\Services\DependencyGenerator\CredentialsGenerator
+      arguments:
+        - "@service.twig"
+
+  service.generator.services:
+        class: SlytherinCz\SlyGen\Services\DependencyGenerator\ServicesGenerator
+        arguments:
+          - "@service.twig"

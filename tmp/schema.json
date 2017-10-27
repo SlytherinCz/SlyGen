@@ -2,6 +2,17 @@
   "type":"relational",
   "driver":"mysql",
   "name":"test",
+  "outputFolder": "D:\\DevRepositories\\SlyGen\\tmp",
+  "credentials": {
+    "dbname": "test",
+    "username": "testuser",
+    "password": "supersecret",
+    "host": "127.0.0.1",
+    "port": "1234",
+    "driver": "mysql",
+    "charset": "utf-8",
+    "collation": ""
+  },
   "resources": [
     {
       "name":"resource_1",
