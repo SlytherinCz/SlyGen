@@ -8,7 +8,7 @@ use SlytherinCz\SlyGen\Models\Indexes\PrimaryKeyIndex;
  * Class PrimaryKeyIndexFactory
  * @package SlytherinCz\SlyGen\Factories
  */
-class PrimaryKeyIndexFactory
+class PrimaryKeyIndexFactory implements IndexFactoryInterface
 {
     /**
      * @param \StdClass $source
@@ -20,10 +20,11 @@ class PrimaryKeyIndexFactory
     }
 
     /**
-     * @return string
+     * @param string
+     * @return bool
      */
-    public function supports()
+    public function supports(string $type) : bool
     {
-        return PrimaryKeyIndex::TYPE;
+        return $type === PrimaryKeyIndex::TYPE;
     }
 }

@@ -1,0 +1,16 @@
+$table->{{ index.getType() }}('{{ index.getColumn() }}')
+{% if index.getType() == 'foreign' %}
+  {% if index.getReferencesColumn() is not null %}
+  ->references("{{ index.getReferencesColumn() }}")
+  {% endif %}
+  {% if index.getReferencesTable() is not null %}
+  ->on("{{ index.getReferencesTable() }}")
+  {% endif %}
+  {% if index.getOnDelete() is not null %}
+  ->onDelete("{{ index.getOnDelete() }}")
+  {% endif %}
+  {% if index.getOnUpdate is not null %}
+  ->onUpdate("{{ index.getOnUpdate }}")
+  {% endif %}
+{% endif %};
+

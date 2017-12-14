@@ -2,17 +2,15 @@
 
 namespace SlytherinCz\SlyGen\Models;
 
-class ColumnCollection implements \JsonSerializable
+use IteratorAggregate;
+use Traversable;
+
+class ColumnCollection implements CollectionInterface
 {
-    private $collection = [];
+    use CollectionTrait;
 
     public function add(Column $column)
     {
         $this->collection[] = $column;
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->collection;
     }
 }

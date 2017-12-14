@@ -1,0 +1,28 @@
+{# Create tables firts #}
+{% for resource in resources %}
+
+Capsule::schema()->create( "{{ resource.getName() }}" ,function(Blueprint $table){
+  {% for option in resource.getOptionCollection() %}
+  $table->{{ option.getType() }} = '{{ option.getValue() }}';
+  {% endfor %}
+
+  {% for column in resource.getColumnCollection() %}
+  $table->{{ column.getDataType() }}('{{ column.getName() }}');
+  {% endfor %}
+});
+
+{% endfor %}
+
+
+{# Create indexes on already migrated tables #}
+{% for resource in resources %}
+
+{% if resource.getIndexCollection()|length > 0  %}
+Capsule::schema()->table( "{{ resource.getName() }}" ,function(Blueprint $table){
+  {% for index in resource.getIndexCollection() %}
+{% include "TableIndex.php.twig" with {'index':index} %}
+  {% endfor %}
+});
+{% endif %}
+
+{% endfor %}

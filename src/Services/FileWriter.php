@@ -16,10 +16,9 @@ class FileWriter
             mkdir($path);
         }
 
-
         if(!is_writable($path))
         {
-            throw new FileWriterException('Path '.$fullPath.' is not writable');
+            throw new FileWriterException('Path '.$path.' is not writable');
         }
 
         file_put_contents($path.DIRECTORY_SEPARATOR.$file->getFilename(),$file->getBody());

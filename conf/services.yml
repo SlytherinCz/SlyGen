@@ -5,16 +5,25 @@ services:
       - "@factory.schemaFactory"
       - "@service.generator.credentials"
       - "@service.generator.services"
+      - "@service.generator.migration"
       - "@service.fileWriter"
 
-  factory.primaryKey:
+  factory.primaryKeyIndex:
     class: SlytherinCz\SlyGen\Factories\PrimaryKeyIndexFactory
+
+  factory.foreignKeyIndex:
+    class: SlytherinCz\SlyGen\Factories\ForeignKeyIndexFactory
+
+  factory.uniqueIndex:
+    class: SlytherinCz\SlyGen\Factories\UniqueIndexFactory
 
   factory.indexFactory:
     class: SlytherinCz\SlyGen\Factories\IndexFactory
     arguments:
       q:
-       - "@factory.primaryKey"
+       - "@factory.primaryKeyIndex"
+       - "@factory.foreignKeyIndex"
+       - "@factory.uniqueIndex"
 
   factory.schemaFactory:
     class: SlytherinCz\SlyGen\Factories\SchemaFactory
@@ -31,6 +40,15 @@ services:
     arguments:
       - "@factory.columnCollectionFactory"
       - "@factory.indexCollectionFactory"
+      - "@factory.optionCollectionFactory"
+
+  factory.optionCollectionFactory:
+      class: SlytherinCz\SlyGen\Factories\OptionCollectionFactory
+      arguments:
+        - "@factory.optionFactory"
+
+  factory.optionFactory:
+    class: SlytherinCz\SlyGen\Factories\OptionFactory
 
   factory.columnCollectionFactory:
     class: SlytherinCz\SlyGen\Factories\ColumnCollectionFactory
@@ -48,16 +66,22 @@ services:
   service.twigLoader:
     class: Twig_Loader_Filesystem
     arguments:
-      - "src/Templates"
-    calls:
-      - method: addPath
-        arguments:
-         - "src/Templates/Dependency"
+      "q":
+        - "src/Templates"
+        - "src/Templates/Dependency"
+        - "src/Templates/Migration"
+
+  service.twigDebug:
+    class: Twig_Extension_Debug
 
   service.twig:
     class: Twig_Environment
     arguments:
       - "@service.twigLoader"
+    calls:
+      - method: addExtension
+        arguments:
+        - "@service.twigDebug"
 
   service.fileWriter:
     class: SlytherinCz\SlyGen\Services\FileWriter
@@ -71,6 +95,11 @@ services:
       class: SlytherinCz\SlyGen\Services\DependencyGenerator\CredentialsGenerator
       arguments:
         - "@service.twig"
+
+  service.generator.migration:
+        class: SlytherinCz\SlyGen\Services\MigrationGenerator
+        arguments:
+          - "@service.twig"
 
   service.generator.services:
         class: SlytherinCz\SlyGen\Services\DependencyGenerator\ServicesGenerator

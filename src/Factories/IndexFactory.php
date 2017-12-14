@@ -2,6 +2,8 @@
 
 namespace SlytherinCz\SlyGen\Factories;
 
+use SlytherinCz\SlyGen\Exceptions\IndexFactoryUnsupportedTypeException;
+
 /**
  * Class IndexFactory
  * @package SlytherinCz\SlyGen\Factories
@@ -26,6 +28,8 @@ class IndexFactory
             {
                 return $factory->fromStdClass($source);
             }
+
         }
+        throw new IndexFactoryUnsupportedTypeException('Index type '.$source->type.' is not supported');
     }
 }

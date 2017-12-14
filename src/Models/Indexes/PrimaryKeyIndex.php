@@ -6,16 +6,12 @@ class PrimaryKeyIndex implements IndexInterface, \JsonSerializable
 {
     const TYPE = 'primary';
 
+    use IndexTrait;
+
     /** @var string*/
     private $column;
 
-    /**
-     * @return mixed
-     */
-    public function getColumn() : string
-    {
-        return $this->column;
-    }
+
 
     /**
      * @param $column

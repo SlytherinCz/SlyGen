@@ -2,20 +2,15 @@
 
 namespace SlytherinCz\SlyGen\Models;
 
-class ResourceCollection implements \JsonSerializable
+use IteratorAggregate;
+use Traversable;
+
+class ResourceCollection implements \JsonSerializable, IteratorAggregate
 {
-    /**
-     * @var array
-     */
-    private $collection = [];
+    use CollectionTrait;
 
     public function add(Resource $resource)
     {
         $this->collection[] = $resource;
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->collection;
     }
 }

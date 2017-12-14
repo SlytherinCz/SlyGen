@@ -16,6 +16,10 @@ class Resource implements \JsonSerializable
      * @var IndexCollection
      */
     private $indexCollection;
+    /**
+     * @var OptionCollection
+     */
+    private $optionCollection;
 
     /**
      * @return string
@@ -43,11 +47,25 @@ class Resource implements \JsonSerializable
 
     /**
      */
-    public function __construct(string $name,ColumnCollection $columnCollection,IndexCollection $indexCollection)
+    public function __construct(
+        string $name,
+        ColumnCollection $columnCollection,
+        IndexCollection $indexCollection,
+        OptionCollection $optionCollection
+    )
     {
         $this->name = $name;
         $this->columnCollection = $columnCollection;
         $this->indexCollection = $indexCollection;
+        $this->optionCollection = $optionCollection;
+    }
+
+    /**
+     * @return OptionCollection
+     */
+    public function getOptionCollection(): OptionCollection
+    {
+        return $this->optionCollection;
     }
 
     public function jsonSerialize()

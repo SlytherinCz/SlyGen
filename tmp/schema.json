@@ -20,18 +20,34 @@
         {
           "type":"collation",
           "value":"utf-8"
+        },
+        {
+          "type":"engine",
+          "value":"InnoDB"
         }
       ],
       "indexes": [
         {
-          "type": "primary",
-          "column":"column_1"
+          "type": "unique",
+          "column":"column_2"
+        },
+        {
+          "type":"foreign",
+          "column":"column_2",
+          "referencesTable":"resource_2",
+          "referencesColumn":"column_1",
+          "onDelete":"cascade",
+          "onUpdate":"cascade"
         }
       ],
       "columns":[
         {
           "name": "column_1",
-          "dataType" : "text"
+          "dataType" : "increment"
+        },
+        {
+          "name": "column_2",
+          "dataType" : "string"
         }
       ]
     }
