@@ -18,4 +18,12 @@ trait CollectionTrait
     {
         return new \ArrayIterator($this->collection);
     }
+
+    public function count(){
+        return count($this->collection);
+    }
+
+    public function isEmpty():bool {
+        return count($this) === 0;
+    }
 }

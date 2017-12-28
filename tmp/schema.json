@@ -47,9 +47,20 @@
         },
         {
           "name": "column_2",
-          "dataType" : "string"
+          "dataType" : "integer"
         }
       ]
+    },
+    {
+      "name":"resource_2",
+      "options":[],
+      "columns": [
+        {
+          "name":"column_1",
+          "dataType":"increment"
+        }
+      ],
+      "indexes": []
     }
   ]
 }

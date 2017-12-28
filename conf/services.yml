@@ -6,6 +6,7 @@ services:
       - "@service.generator.credentials"
       - "@service.generator.services"
       - "@service.generator.migration"
+      - "@service.generator.controller"
       - "@service.fileWriter"
 
   factory.primaryKeyIndex:
@@ -70,6 +71,7 @@ services:
         - "src/Templates"
         - "src/Templates/Dependency"
         - "src/Templates/Migration"
+        - "src/Templates/Controller"
 
   service.twigDebug:
     class: Twig_Extension_Debug
@@ -98,6 +100,11 @@ services:
 
   service.generator.migration:
         class: SlytherinCz\SlyGen\Services\MigrationGenerator
+        arguments:
+          - "@service.twig"
+
+  service.generator.controller:
+        class: SlytherinCz\SlyGen\Services\ControllerGenerator
         arguments:
           - "@service.twig"
 

@@ -4,7 +4,7 @@
 namespace SlytherinCz\SlyGen\Models;
 
 
-interface CollectionInterface extends \JsonSerializable, \IteratorAggregate
+interface CollectionInterface extends \JsonSerializable, \IteratorAggregate, \Countable
 {
 
 }

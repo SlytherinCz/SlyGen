@@ -4,6 +4,7 @@ namespace SlytherinCz\SlyGen\Command;
 
 use SlytherinCz\SlyGen\Factories\SchemaFactory;
 use SlytherinCz\SlyGen\Services\BootstrapGenerator;
+use SlytherinCz\SlyGen\Services\ControllerGenerator;
 use SlytherinCz\SlyGen\Services\DependencyGenerator\CredentialsGenerator;
 use SlytherinCz\SlyGen\Services\DependencyGenerator\ServicesGenerator;
 use SlytherinCz\SlyGen\Services\FileWriter;
@@ -42,12 +43,17 @@ class GeneratorCommand extends Command
      * @var MigrationGenerator
      */
     private $migrationGenerator;
+    /**
+     * @var ControllerGenerator
+     */
+    private $controllerGenerator;
 
     /**
      * @param SchemaFactory $schemaFactory
      * @param CredentialsGenerator $credentialsGenerator
      * @param ServicesGenerator $servicesGenerator
      * @param MigrationGenerator $migrationGenerator
+     * @param ControllerGenerator $controllerGenerator
      * @param FileWriter $fileWriter
      * @internal param CredentialsGenerator $dependencyGenerator
      */
@@ -56,6 +62,7 @@ class GeneratorCommand extends Command
         CredentialsGenerator $credentialsGenerator,
         ServicesGenerator $servicesGenerator,
         MigrationGenerator $migrationGenerator,
+        ControllerGenerator $controllerGenerator,
         FileWriter $fileWriter
     )
     {
@@ -65,6 +72,7 @@ class GeneratorCommand extends Command
         $this->servicesGenerator = $servicesGenerator;
         $this->fileWriter = $fileWriter;
         $this->migrationGenerator = $migrationGenerator;
+        $this->controllerGenerator = $controllerGenerator;
     }
 
     protected function configure()
@@ -79,12 +87,17 @@ class GeneratorCommand extends Command
         $schema = $this->schemaFactory->fromStdClass(json_decode(file_get_contents('tmp/schema.json')));
         $credentialsBlueprint = $this->credentialsGenerator->generate($schema);
         $servicesBlueprint = $this->servicesGenerator->generate($schema);
-        $migrationBluepring = $this->migrationGenerator->generate($schema);
+        $migrationBlueprint= $this->migrationGenerator->generate($schema);
+        $controllerBlueprints = $this->controllerGenerator->generate($schema);
 
 
         $this->fileWriter->write($credentialsBlueprint,$schema->getOutputFolder());
         $this->fileWriter->write($servicesBlueprint,$schema->getOutputFolder());
-        $this->fileWriter->write($migrationBluepring,$schema->getOutputFolder());
+        $this->fileWriter->write($migrationBlueprint,$schema->getOutputFolder());
+        foreach($controllerBlueprints as $controllerBlueprint)
+        {
+            $this->fileWriter->write($controllerBlueprint,$schema->getOutputFolder());
+        }
 
 
         $output->writeln('YAY :)');
