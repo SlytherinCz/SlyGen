@@ -29,7 +29,7 @@ class SchemaFactory
             $source->name,
             $source->credentials,
             $source->outputFolder,
-            $this->resourceCollectionFactory->fromArray($source->resources)
+            $this->resourceCollectionFactory->fromArray($source->resources,$source->name)
         );
     }
 

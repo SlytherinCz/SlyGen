@@ -8,3 +8,6 @@ $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/..'));
 $loader->load('conf/services.yml');
 
 $container->compile();
+
+$routingLoader = new Symfony\Component\Routing\Loader\YamlFileLoader();
+$routingLoader->load(__DIR__.'/config/routing.yml');

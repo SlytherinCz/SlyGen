@@ -1,0 +1,5 @@
+services:
+{% for resource in resources %}
+    controller.{{ resource.getName() | lower }}:
+        class: {{ resource.getFullyQualifiedControllerClassName() }}
+{% endfor %}

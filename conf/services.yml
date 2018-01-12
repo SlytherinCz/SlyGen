@@ -2,46 +2,58 @@ services:
   console.generator:
     class: SlytherinCz\SlyGen\Command\GeneratorCommand
     arguments:
-      - "@factory.schemaFactory"
+      - "@factory.schema_factory"
       - "@service.generator.credentials"
       - "@service.generator.services"
       - "@service.generator.migration"
       - "@service.generator.controller"
-      - "@service.fileWriter"
+      - "@service.generator.controller_di"
+      - "@service.generator.model"
+      - "@service.generator.routing"
+      - "@service.file_writer"
 
-  factory.primaryKeyIndex:
+  factory.primary_key_index:
     class: SlytherinCz\SlyGen\Factories\PrimaryKeyIndexFactory
 
-  factory.foreignKeyIndex:
+  factory.foreign_key_index:
     class: SlytherinCz\SlyGen\Factories\ForeignKeyIndexFactory
 
-  factory.uniqueIndex:
+  factory.unique_index:
     class: SlytherinCz\SlyGen\Factories\UniqueIndexFactory
 
-  factory.indexFactory:
+  factory.index_factory:
     class: SlytherinCz\SlyGen\Factories\IndexFactory
     arguments:
       q:
-       - "@factory.primaryKeyIndex"
-       - "@factory.foreignKeyIndex"
-       - "@factory.uniqueIndex"
+       - "@factory.primary_key_index"
+       - "@factory.foreign_key_index"
+       - "@factory.unique_index"
 
-  factory.schemaFactory:
+  factory.schema_factory:
     class: SlytherinCz\SlyGen\Factories\SchemaFactory
     arguments:
-        - "@factory.resourceCollectionFactory"
+        - "@factory.resource_collection_factory"
 
-  factory.resourceCollectionFactory:
+  factory.relation_collection_factory:
+      class: SlytherinCz\SlyGen\Factories\RelationCollectionFactory
+      arguments:
+        - "@factory.relation_factory"
+
+  factory.relation_factory:
+      class: SlytherinCz\SlyGen\Factories\RelationFactory
+
+  factory.resource_collection_factory:
     class: SlytherinCz\SlyGen\Factories\ResourceCollectionFactory
     arguments:
-      - "@factory.resourceFactory"
+      - "@factory.resource_factory"
 
-  factory.resourceFactory:
+  factory.resource_factory:
     class: SlytherinCz\SlyGen\Factories\ResourceFactory
     arguments:
       - "@factory.columnCollectionFactory"
       - "@factory.indexCollectionFactory"
       - "@factory.optionCollectionFactory"
+      - "@factory.relation_collection_factory"
 
   factory.optionCollectionFactory:
       class: SlytherinCz\SlyGen\Factories\OptionCollectionFactory
@@ -59,7 +71,7 @@ services:
   factory.indexCollectionFactory:
     class: SlytherinCz\SlyGen\Factories\IndexCollectionFactory
     arguments:
-      - "@factory.indexFactory"
+      - "@factory.index_factory"
 
   factory.columnFactory:
     class: SlytherinCz\SlyGen\Factories\ColumnFactory
@@ -72,6 +84,7 @@ services:
         - "src/Templates/Dependency"
         - "src/Templates/Migration"
         - "src/Templates/Controller"
+        - "src/Templates/Model"
 
   service.twigDebug:
     class: Twig_Extension_Debug
@@ -85,8 +98,13 @@ services:
         arguments:
         - "@service.twigDebug"
 
-  service.fileWriter:
+  service.file_writer:
     class: SlytherinCz\SlyGen\Services\FileWriter
+
+  service.generator.controller_di:
+    class: SlytherinCz\SlyGen\Services\DependencyGenerator\ControllersDIGenerator
+    arguments:
+          - "@service.twig"
 
   service.generator.bootstrap:
     class: SlytherinCz\SlyGen\Services\BootstrapGenerator
@@ -98,6 +116,11 @@ services:
       arguments:
         - "@service.twig"
 
+  service.generator.routing:
+        class: SlytherinCz\SlyGen\Services\DependencyGenerator\RoutingGenerator
+        arguments:
+          - "@service.twig"
+
   service.generator.migration:
         class: SlytherinCz\SlyGen\Services\MigrationGenerator
         arguments:
@@ -108,7 +131,32 @@ services:
         arguments:
           - "@service.twig"
 
+  service.generator.model:
+         class: SlytherinCz\SlyGen\Services\ModelGenerator
+         arguments:
+           - "@service.twig"
+           - "@service.relation_method_factory"
+
   service.generator.services:
         class: SlytherinCz\SlyGen\Services\DependencyGenerator\ServicesGenerator
         arguments:
           - "@service.twig"
+
+  service.relation.one_to_many_relation_factory:
+        class: SlytherinCz\SlyGen\Factories\RelationMethod\OneToManyRelationMethodFactory
+        arguments:
+            - "@service.twig"
+
+  service.relation.many_to_one_relation_factory:
+        class: SlytherinCz\SlyGen\Factories\RelationMethod\ManyToOneRelationMethodFactory
+        arguments:
+            - "@service.twig"
+
+  service.relation_method_factory:
+        class: SlytherinCz\SlyGen\Factories\RelationMethod\RelationMethodFactory
+        calls:
+          - method: add
+            arguments:
+              "q":
+                - "@service.relation.one_to_many_relation_factory"
+                - "@service.relation.many_to_one_relation_factory"

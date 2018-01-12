@@ -17,10 +17,11 @@ class ResourceCollectionFactory
         $this->resourceFactory = $resourceFactory;
     }
 
-    public function fromArray(array $source)
+    public function fromArray(array $source,string $namespace)
     {
         $collection = new ResourceCollection();
         foreach ($source as $resource){
+            $resource->namespace = $namespace;
             $collection->add(
                 $this->resourceFactory->fromStdClass($resource)
             );

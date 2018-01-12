@@ -4,11 +4,12 @@ namespace SlytherinCz\SlyGen\Services;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpNamespace;
+use SlytherinCz\SlyGen\Helpers\ResourceControllerNameHelper;
 use SlytherinCz\SlyGen\Models\FileBlueprint;
 use SlytherinCz\SlyGen\Models\Resource;
 use SlytherinCz\SlyGen\Models\Schema;
 
-class ControllerGenerator
+class ControllerGenerator implements ClassGeneratorInterface
 {
     /** @var  \Twig_Environment */
     private $twig;
@@ -28,7 +29,7 @@ class ControllerGenerator
         foreach ($schema->getResourceCollection() as $resource) {
             $namespace = $this->createNamespace($schema,$resource);
 
-            $class = $namespace->addClass($this->getControllerClassName($resource));
+            $class = $namespace->addClass($resource->getControllerClassName());
 
             $this->addIndexMethod($class,$resource);
 
@@ -46,7 +47,7 @@ class ControllerGenerator
 
 
             $blueprints[] = new FileBlueprint(
-                $this->getControllerClassName($resource).'.php',
+                $resource->getControllerClassName().'.php',
                 'src/Controllers',
                 '<?php'.PHP_EOL.(string)$namespace
             );
@@ -60,17 +61,12 @@ class ControllerGenerator
         return ucfirst($resource->getName()).'Model';
     }
 
-    private function getControllerClassName(Resource $resource) : string
-    {
-        return ucfirst($resource->getName()).'Controller';
-    }
-
     /**
      * @param $schema
      * @param $resource
      * @return PhpNamespace
      */
-    private function createNamespace($schema, $resource)
+    public function createNamespace(Schema $schema,Resource $resource) : PhpNamespace
     {
         $namespace = new PhpNamespace($schema->getName() . '\\Controllers');
         $namespace->addUse(

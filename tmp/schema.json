@@ -15,7 +15,8 @@
   },
   "resources": [
     {
-      "name":"resource_1",
+      "name":"team",
+      "plural":"teams",
       "options" : [
         {
           "type":"collation",
@@ -30,37 +31,57 @@
         {
           "type": "unique",
           "column":"column_2"
-        },
-        {
-          "type":"foreign",
-          "column":"column_2",
-          "referencesTable":"resource_2",
-          "referencesColumn":"column_1",
-          "onDelete":"cascade",
-          "onUpdate":"cascade"
         }
       ],
       "columns":[
         {
-          "name": "column_1",
+          "name": "id",
           "dataType" : "increment"
         },
         {
-          "name": "column_2",
-          "dataType" : "integer"
+          "name": "name",
+          "dataType" : "string"
+        }
+      ],
+      "relations":[
+        {
+          "type":"12M",
+          "reference":"player",
+          "through":null
         }
       ]
     },
     {
-      "name":"resource_2",
+      "name":"player",
+      "plural":"players",
       "options":[],
+      "relations":[
+        {
+          "type":"M21",
+          "reference":"team",
+          "through":null
+        }
+      ],
       "columns": [
         {
           "name":"column_1",
           "dataType":"increment"
+        },
+        {
+          "name":"resource_1_id",
+          "dataType":"integer"
         }
       ],
-      "indexes": []
+      "indexes": [
+        {
+          "type":"foreign",
+          "column":"column_2",
+          "referencesTable":"resource_1",
+          "referencesColumn":"id",
+          "onDelete":"cascade",
+          "onUpdate":"cascade"
+        }
+      ]
     }
   ]
 }
