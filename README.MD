@@ -103,4 +103,29 @@ Relations are used for generating methods in Models, and as such accessors to re
     }
 ```
 
+## Usage
+
+After you have a `schema.json` modified for your purposes (or you use the one in /tmp dir) run generator with
+
+```bash
+php bin/console.php generator:make
+``` 
+
+
+
+This will generate the code in specified directory. Use the composer file in tmp dir, and install dependencies.
+
+Then, in the generated code directory, run command
+```bash
+php bin/console migration:create
+```
+
+If you supplied correct db credentials, and have MySql running, tables should be created and you can run
+php server with a command like 
+```bash
+php -S localhost:1234
+```
+
+Or any other way you normally run your PHP with.
+
 
