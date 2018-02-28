@@ -128,4 +128,7 @@ php -S localhost:1234
 
 Or any other way you normally run your PHP with.
 
+If you used team resource from the example, you will have endpoints like  
+`localhost:1234/team`, `localhost:1234/team/:id` and so on
+
 
