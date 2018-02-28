@@ -1,3 +1,4 @@
 $instance = {{ modelName }}::findOrFail($id);
-$instance->update($request);
-return $instance;
+return new Response(
+    $instance->update($request)->toJson()
+);

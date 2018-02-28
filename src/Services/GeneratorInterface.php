@@ -1,8 +1,6 @@
 <?php
 
-
 namespace SlytherinCz\SlyGen\Services;
-
 
 use SlytherinCz\SlyGen\Models\FileBlueprint;
 use SlytherinCz\SlyGen\Models\Schema;

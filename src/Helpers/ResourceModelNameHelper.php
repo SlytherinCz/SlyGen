@@ -8,11 +8,11 @@ class ResourceModelNameHelper
 {
     public static function getModelName(string $resourceName): string
     {
-        return ucfirst($resourceName) . 'Model';
+        return ucfirst($resourceName);
     }
 
     public static function getFullyQualifiedModelName(Schema $schema, string $resourceName): string
     {
-        return $schema->getName().'\\Models\\'.self::getModelName($resourceName);
+        return $schema->getName().'\\'.NamespaceDictionary::MODEL.'\\'.self::getModelName($resourceName);
     }
 }

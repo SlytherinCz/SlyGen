@@ -1,4 +1,5 @@
 .idea
 vendor
 tmp/*
+!tmp/composer.json
 !tmp/schema.json

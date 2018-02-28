@@ -1,85 +1,89 @@
 {
-  "type":"relational",
-  "driver":"mysql",
-  "name":"test",
+  "type": "relational",
+  "driver": "mysql",
+  "name": "test",
   "outputFolder": "D:\\DevRepositories\\SlyGen\\tmp",
   "credentials": {
     "dbname": "test",
-    "username": "testuser",
-    "password": "supersecret",
+    "username": "root",
+    "password": "",
     "host": "127.0.0.1",
-    "port": "1234",
+    "port": "3306",
     "driver": "mysql",
-    "charset": "utf-8",
-    "collation": ""
+    "charset": "utf8",
+    "collation": "utf8_unicode_ci"
   },
   "resources": [
     {
-      "name":"team",
-      "plural":"teams",
-      "options" : [
+      "name": "team",
+      "plural": "teams",
+      "options": [
         {
-          "type":"collation",
-          "value":"utf-8"
+          "type": "collation",
+          "value": "utf8_unicode_ci"
         },
         {
-          "type":"engine",
-          "value":"InnoDB"
+          "type": "engine",
+          "value": "InnoDB"
         }
       ],
       "indexes": [
         {
           "type": "unique",
-          "column":"column_2"
-        }
-      ],
-      "columns":[
-        {
-          "name": "id",
-          "dataType" : "increment"
-        },
-        {
-          "name": "name",
-          "dataType" : "string"
-        }
-      ],
-      "relations":[
-        {
-          "type":"12M",
-          "reference":"player",
-          "through":null
-        }
-      ]
-    },
-    {
-      "name":"player",
-      "plural":"players",
-      "options":[],
-      "relations":[
-        {
-          "type":"M21",
-          "reference":"team",
-          "through":null
+          "column": "column_3"
         }
       ],
       "columns": [
         {
-          "name":"column_1",
-          "dataType":"increment"
+          "name": "id",
+          "dataType": "increments"
         },
         {
-          "name":"resource_1_id",
-          "dataType":"integer"
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "name": "column_3",
+          "dataType": "string"
+        }
+      ],
+      "relations": [
+        {
+          "type": "12M",
+          "reference": "player",
+          "through": null
+        }
+      ]
+    },
+    {
+      "name": "player",
+      "plural": "players",
+      "options": [],
+      "relations": [
+        {
+          "type": "M21",
+          "reference": "team",
+          "through": null
+        }
+      ],
+      "columns": [
+        {
+          "name": "column_1",
+          "dataType": "increments"
+        },
+        {
+          "name": "resource_1_id",
+          "dataType": "integer"
         }
       ],
       "indexes": [
         {
-          "type":"foreign",
-          "column":"column_2",
-          "referencesTable":"resource_1",
-          "referencesColumn":"id",
-          "onDelete":"cascade",
-          "onUpdate":"cascade"
+          "type": "foreign",
+          "column": "resource_1_id",
+          "referencesTable": "resource_1",
+          "referencesColumn": "id",
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       ]
     }

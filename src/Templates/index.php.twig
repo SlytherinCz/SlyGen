@@ -1,5 +1,41 @@
 <?php
 
-include_once('vendor/autoload.php');
-include_once('src/bootstrap.php');
+require_once(__DIR__.'/src/bootstrap.php');
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\EventListener\RouterListener;
+use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\Routing\Loader\YamlFileLoader;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+
+$request = Request::createFromGlobals();
+
+$dispatcher = new EventDispatcher();
+$controllerResolver = new ControllerResolver();
+$argumentResolver = new ArgumentResolver();
+
+$routeLocator = new FileLocator(array(__DIR__));
+$loader = new YamlFileLoader($routeLocator);
+$collection = $loader->load(__DIR__.'/config/routing.yml');
+
+$requestStack = new RequestStack();
+
+$routerListener = new RouterListener(
+new UrlMatcher($collection,new RequestContext()),
+$requestStack
+);
+
+$dispatcher->addSubscriber($routerListener);
+
+$kernel = new HttpKernel($dispatcher, $controllerResolver, $requestStack, $argumentResolver);
+$response = $kernel->handle($request);
+
+$response->send();
+
+$kernel->terminate($request, $response);

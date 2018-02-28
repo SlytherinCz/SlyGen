@@ -1,1 +1,3 @@
-return {{ modelName }}::all();
+return new Response(
+    {{ modelName }}::all()->toJson()
+);

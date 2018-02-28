@@ -1,1 +1,3 @@
-return {{ modelName }}::findOrFail($id);
+return new Response(
+    {{ modelName }}::findOrFail($id)->toJson()
+);

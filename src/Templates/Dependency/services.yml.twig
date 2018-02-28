@@ -1,21 +1,14 @@
 imports:
   - { resource: "credentials.yml" }
   - { resource: "controllers.yml" }
-  - { resource: "routing.yml" }
+
 services:
     eloquent.capsule:
-    class: Illuminate\Database\Capsule\Manager
-    calls:
-      - method: addConnection
-        arguments:
-          'default':
-            driver: "%database.driver%"
-            host: "%database.host%"
-            port: "%database.port%"
-            database: "%database.dbname%"
-            username: "%database.username%"
-            password: "%database.password%"
-            charset: "%database.charset%"
-            collation: "%database.collation%"
-      - method: bootEloquent
-      - method: setAsGlobal
+        class: Illuminate\Database\Capsule\Manager
+        calls:
+          - method: addConnection
+            arguments:
+              - "%database%"
+              - "default"
+          - method: bootEloquent
+          - method: setAsGlobal

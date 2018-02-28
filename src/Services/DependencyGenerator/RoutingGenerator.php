@@ -4,7 +4,6 @@ namespace SlytherinCz\SlyGen\Services\DependencyGenerator;
 
 use SlytherinCz\SlyGen\Helpers\HttpMethodMapping;
 use SlytherinCz\SlyGen\Models\FileBlueprint;
-use SlytherinCz\SlyGen\Models\Resource;
 use SlytherinCz\SlyGen\Models\Route;
 use SlytherinCz\SlyGen\Models\Schema;
 
@@ -18,28 +17,25 @@ class RoutingGenerator
      */
     public function __construct(
         \Twig_Environment $twig
-    )
-    {
+    ) {
         $this->twig = $twig;
     }
 
-    public function generate( Schema $schema ) : FileBlueprint
+    public function generate(Schema $schema): FileBlueprint
     {
         $routes = [];
-        /** @var Resource $resource*/
-        foreach ($schema->getResourceCollection() as $resource)
-        {
-            foreach([
-                HttpMethodMapping::CREATE,
-                HttpMethodMapping::DELETE,
-                HttpMethodMapping::SHOW,
-                HttpMethodMapping::INDEX,
-                HttpMethodMapping::UPDATE
-            ] as $method)
-            {
-                $name = $resource->getName().'_'.$method['controllerMethod'];
-                $controller = $resource->getFullyQualifiedControllerClassName().'::'.$method['controllerMethod'];
-                $path = '/'.strtolower($resource->getName()) . ($method['requiresSlug'] ? '/{:id}' : '');
+        /** @var Resource $resource */
+        foreach ($schema->getResourceCollection() as $resource) {
+            foreach ([
+                         HttpMethodMapping::CREATE,
+                         HttpMethodMapping::DELETE,
+                         HttpMethodMapping::SHOW,
+                         HttpMethodMapping::INDEX,
+                         HttpMethodMapping::UPDATE
+                     ] as $method) {
+                $name = $resource->getName() . '_' . $method['controllerMethod'];
+                $controller = $resource->getFullyQualifiedControllerClassName() . '::' . $method['controllerMethod'];
+                $path = '/' . strtolower($resource->getName()) . ($method['requiresSlug'] ? '/{:id}' : '');
                 $route = new Route(
                     $name,
                     $path,

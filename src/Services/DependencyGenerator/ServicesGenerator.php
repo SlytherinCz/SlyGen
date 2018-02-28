@@ -21,12 +21,12 @@ class ServicesGenerator
         $this->twig_Environment = $twig_Environment;
     }
 
-    public function generate(Schema $schema) : FileBlueprint
+    public function generate(Schema $schema): FileBlueprint
     {
         return new FileBlueprint(
             'services.yml',
             'config',
-            $this->twig_Environment->render('services.yml.twig',(array)$schema->getCredentials())
+            $this->twig_Environment->render('services.yml.twig', (array)$schema->getCredentials())
         );
 
     }

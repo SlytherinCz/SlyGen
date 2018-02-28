@@ -27,7 +27,7 @@ class CredentialsGenerator implements GeneratorInterface
         return new FileBlueprint(
             'credentials.yml',
             'config',
-            $this->twig_Environment->render('credentials.yml.twig',(array)$schema->getCredentials())
+            $this->twig_Environment->render('credentials.yml.twig', (array)$schema->getCredentials())
         );
     }
 }

@@ -1,7 +1,7 @@
 {% for route in routes %}
 {{ route.getName() }}:
     path: {{ route.getPath() }}
-    controller: {{ route.getController() }}
+    defaults: { _controller: {{ route.getController() }} }
     methods: [{{ route.methods | join(',') }}]
 
 {% endfor %}

@@ -4,13 +4,16 @@ namespace SlytherinCz\SlyGen\Services;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpNamespace;
-use SlytherinCz\SlyGen\Helpers\ResourceControllerNameHelper;
+use SlytherinCz\SlyGen\Helpers\NamespaceDictionary;
 use SlytherinCz\SlyGen\Models\FileBlueprint;
 use SlytherinCz\SlyGen\Models\Resource;
 use SlytherinCz\SlyGen\Models\Schema;
 
 class ControllerGenerator implements ClassGeneratorInterface
 {
+
+    private const HTTP_REQUEST_INTERFACE_CLASS_NAME = "Psr\Http\Message\RequestInterface";
+
     /** @var  \Twig_Environment */
     private $twig;
 
@@ -22,67 +25,58 @@ class ControllerGenerator implements ClassGeneratorInterface
         $this->twig = $twig;
     }
 
-    public function generate(Schema $schema) : array
+    public function generate(Schema $schema): array
     {
         $blueprints = [];
 
         foreach ($schema->getResourceCollection() as $resource) {
-            $namespace = $this->createNamespace($schema,$resource);
+            $namespace = $this->createNamespace($schema, $resource);
 
             $class = $namespace->addClass($resource->getControllerClassName());
 
-            $this->addIndexMethod($class,$resource);
+            $this->addIndexMethod($class, $resource);
 
-            $this->addShowMethod($class,$resource);
+            $this->addShowMethod($class, $resource);
 
-            $this->addCreateMethod($class,$resource);
+            $this->addCreateMethod($class, $resource);
 
-            $this->addUpdateMethod($class,$resource);
-
-            /* todo:  this belongs to model generator, not here */
-            /*
-                $tableProperty = $class->addProperty('table', $resource->getName());
-                $tableProperty->setVisibility('private');
-            */
-
+            $this->addUpdateMethod($class, $resource);
 
             $blueprints[] = new FileBlueprint(
-                $resource->getControllerClassName().'.php',
-                'src/Controllers',
-                '<?php'.PHP_EOL.(string)$namespace
+                $resource->getControllerClassName() . '.php',
+                'src/'.NamespaceDictionary::CONTROLLER,
+                '<?php' . PHP_EOL . (string)$namespace
             );
 
         }
         return $blueprints;
     }
 
-    private function getModelAlias(Resource $resource):string
-    {
-        return ucfirst($resource->getName()).'Model';
-    }
 
     /**
      * @param $schema
      * @param $resource
      * @return PhpNamespace
      */
-    public function createNamespace(Schema $schema,Resource $resource) : PhpNamespace
+    public function createNamespace(Schema $schema, Resource $resource): PhpNamespace
     {
-        $namespace = new PhpNamespace($schema->getName() . '\\Controllers');
+        $namespace = new PhpNamespace($schema->getName() .'\\'. NamespaceDictionary::CONTROLLER);
         $namespace->addUse(
-            $schema->getName().'\\Models\\'.ucfirst($resource->getName()),
-            $this->getModelAlias($resource)
+            $schema->getName() . '\\' .NamespaceDictionary::MODEL. '\\' . $resource->getModelClassName()
+        );
+        $namespace->addUse(
+            'Symfony\Component\HttpFoundation\Response'
         );
         return $namespace;
     }
 
-    private function addIndexMethod(ClassType $class,Resource $resource)
+    private function addIndexMethod(ClassType $class, Resource $resource)
     {
         $indexMethod = $class->addMethod('index');
         $indexMethod->addBody(
             $this->twig->render(
                 'IndexMethod.php.twig',
-                ['modelName' => $this->getModelAlias($resource)]
+                ['modelName' => $resource->getModelClassName()]
             )
         );
     }
@@ -91,11 +85,10 @@ class ControllerGenerator implements ClassGeneratorInterface
     {
         $showMethod = $class->addMethod('show');
         $showMethod->addParameter('id');
-        $showMethod->setReturnType($this->getModelAlias($resource));
         $showMethod->addBody(
             $this->twig->render(
                 'ShowMethod.php.twig',
-                ['modelName' => $this->getModelAlias($resource)]
+                ['modelName' => $resource->getModelClassName()]
             )
         );
     }
@@ -104,13 +97,11 @@ class ControllerGenerator implements ClassGeneratorInterface
     {
         $createMethod = $class->addMethod('create');
         $parameter = $createMethod->addParameter('request');
-        /* todo: need to figure out what class is Request an alias for, depending on used framework */
-        $parameter->setTypeHint('Request');
-        $createMethod->setReturnType($this->getModelAlias($resource));
+        $parameter->setTypeHint(static::HTTP_REQUEST_INTERFACE_CLASS_NAME);
         $createMethod->addBody(
             $this->twig->render(
                 'CreateMethod.php.twig',
-                ['modelName' => $this->getModelAlias($resource)]
+                ['modelName' => $resource->getModelClassName()]
             )
         );
     }
@@ -119,14 +110,12 @@ class ControllerGenerator implements ClassGeneratorInterface
     {
         $updateMethod = $class->addMethod('update');
         $requestParameter = $updateMethod->addParameter('request');
-        /* todo: need to figure out what class is Request an alias for, depending on used framework */
-        $requestParameter->setTypeHint('Request');
+        $requestParameter->setTypeHint(static::HTTP_REQUEST_INTERFACE_CLASS_NAME);
         $idParameter = $updateMethod->addParameter('id');
-        $updateMethod->setReturnType($this->getModelAlias($resource));
         $updateMethod->addBody(
             $this->twig->render(
                 'UpdateMethod.php.twig',
-                ['modelName' => $this->getModelAlias($resource)]
+                ['modelName' => $resource->getModelClassName()]
             )
         );
     }

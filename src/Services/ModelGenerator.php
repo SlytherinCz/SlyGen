@@ -4,6 +4,7 @@ namespace SlytherinCz\SlyGen\Services;
 
 use Nette\PhpGenerator\PhpNamespace;
 use SlytherinCz\SlyGen\Factories\RelationMethod\RelationMethodFactory;
+use SlytherinCz\SlyGen\Helpers\NamespaceDictionary;
 use SlytherinCz\SlyGen\Models\FileBlueprint;
 use SlytherinCz\SlyGen\Models\Relation;
 use SlytherinCz\SlyGen\Models\Resource;
@@ -11,6 +12,8 @@ use SlytherinCz\SlyGen\Models\Schema;
 
 class ModelGenerator implements ClassGeneratorInterface
 {
+    private const MODEL_ANCESTOR_NAME = "Illuminate\Database\Eloquent\Model";
+
     /** @var  \Twig_Environment */
     private $twig;
     /**
@@ -25,13 +28,16 @@ class ModelGenerator implements ClassGeneratorInterface
     public function __construct(
         \Twig_Environment $twig,
         RelationMethodFactory $relationMethodFactory
-    )
-    {
+    ) {
         $this->twig = $twig;
         $this->relationMethodFactory = $relationMethodFactory;
     }
 
-    public function generate(Schema $schema) : array
+    /**
+     * @param Schema $schema
+     * @return array
+     */
+    public function generate(Schema $schema): array
     {
         $blueprints = [];
 
@@ -40,12 +46,13 @@ class ModelGenerator implements ClassGeneratorInterface
 
             $class = $namespace->addClass($resource->getModelClassName());
 
-            $tableProperty = $class->addProperty('table',$resource->getName());
+            $class->setExtends(static::MODEL_ANCESTOR_NAME);
+
+            $tableProperty = $class->addProperty('table', $resource->getName());
 
             $tableProperty->setVisibility('protected');
 
-            if($resource->hasRelation())
-            {
+            if ($resource->hasRelation()) {
                 /** @var Relation $relation */
                 foreach ($resource->getRelationCollection() as $relation) {
                     $methodFactory = $this->relationMethodFactory->getFactory($relation->getType());
@@ -60,9 +67,9 @@ class ModelGenerator implements ClassGeneratorInterface
 
 
             $blueprints[] = new FileBlueprint(
-                $resource->getModelClassName().'.php',
-                'src/Models',
-                '<?php'.PHP_EOL.(string)$namespace
+                $resource->getModelClassName() . '.php',
+                'src'.DIRECTORY_SEPARATOR.NamespaceDictionary::MODEL,
+                '<?php' . PHP_EOL . (string)$namespace
             );
         }
 
@@ -74,13 +81,9 @@ class ModelGenerator implements ClassGeneratorInterface
      * @param $resource
      * @return PhpNamespace
      */
-    public function createNamespace(Schema $schema,Resource $resource) : PhpNamespace
+    public function createNamespace(Schema $schema, Resource $resource): PhpNamespace
     {
-        $namespace = new PhpNamespace($schema->getName() . '\\Models');
-        /* todo: this probably shouldnt be string literal */
-        $namespace->addUse(
-            'Illuminate\Database\Eloquent\Model'
-        );
+        $namespace = new PhpNamespace($schema->getName() . '\\Model');
         return $namespace;
     }
 }

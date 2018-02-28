@@ -2,6 +2,7 @@
 
 namespace SlytherinCz\SlyGen\Models;
 
+use SlytherinCz\SlyGen\Helpers\NamespaceDictionary;
 use SlytherinCz\SlyGen\Helpers\ResourceControllerNameHelper;
 use SlytherinCz\SlyGen\Helpers\ResourceModelNameHelper;
 
@@ -37,54 +38,6 @@ class Resource implements \JsonSerializable
     private $plural;
 
     /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getModelClassName():string
-    {
-        return ResourceModelNameHelper::getModelName($this->getName());
-    }
-
-    /**
-     * @return string
-     */
-    public function getControllerClassName():string
-    {
-        return ResourceControllerNameHelper::getControllerName($this->getName());
-    }
-
-    /**
-     * @return string
-     */
-    public function getFullyQualifiedControllerClassName():string
-    {
-        return $this->getNamespace().'\\'.'Controller'.'\\'.$this->getControllerClassName();
-    }
-
-    /**
-     * @return ColumnCollection
-     */
-    public function getColumnCollection(): ColumnCollection
-    {
-        return $this->columnCollection;
-    }
-
-    /**
-     * @return IndexCollection
-     */
-    public function getIndexCollection(): IndexCollection
-    {
-        return $this->indexCollection;
-    }
-
-    /**
      * @param string $name
      * @param string $plural
      * @param string $namespace
@@ -101,8 +54,7 @@ class Resource implements \JsonSerializable
         IndexCollection $indexCollection,
         OptionCollection $optionCollection,
         RelationCollection $relationCollection
-    )
-    {
+    ) {
         $this->name = $name;
         $this->columnCollection = $columnCollection;
         $this->indexCollection = $indexCollection;
@@ -110,6 +62,46 @@ class Resource implements \JsonSerializable
         $this->namespace = $namespace;
         $this->relationCollection = $relationCollection;
         $this->plural = $plural;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModelClassName(): string
+    {
+        return ResourceModelNameHelper::getModelName($this->getName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullyQualifiedControllerClassName(): string
+    {
+        return $this->getNamespace() . '\\' . NamespaceDictionary::CONTROLLER . '\\' . $this->getControllerClassName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerClassName(): string
+    {
+        return ResourceControllerNameHelper::getControllerName($this->getName());
     }
 
     /**
@@ -143,17 +135,25 @@ class Resource implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return ColumnCollection
      */
-    public function getNamespace() : string
+    public function getColumnCollection(): ColumnCollection
     {
-        return $this->namespace;
+        return $this->columnCollection;
+    }
+
+    /**
+     * @return IndexCollection
+     */
+    public function getIndexCollection(): IndexCollection
+    {
+        return $this->indexCollection;
     }
 
     /**
      * @return RelationCollection
      */
-    public function getRelationCollection() : RelationCollection
+    public function getRelationCollection(): RelationCollection
     {
         return $this->relationCollection;
     }
@@ -161,7 +161,7 @@ class Resource implements \JsonSerializable
     /**
      * @return bool
      */
-    public function hasRelation() : bool
+    public function hasRelation(): bool
     {
         return !$this->getRelationCollection()->isEmpty();
     }

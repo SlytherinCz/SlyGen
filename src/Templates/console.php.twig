@@ -1,0 +1,11 @@
+<?php
+include_once(__DIR__.'/../vendor/autoload.php');
+include_once(__DIR__.'/../src/bootstrap.php');
+$application = new \Symfony\Component\Console\Application();
+$application->add(
+    new {{ commandNamespace }}\MigrationCommand(
+        new {{ databaseNamespace }}\Migration()
+    )
+);
+
+$application->run();

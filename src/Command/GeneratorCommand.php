@@ -3,12 +3,14 @@
 namespace SlytherinCz\SlyGen\Command;
 
 use SlytherinCz\SlyGen\Factories\SchemaFactory;
+use SlytherinCz\SlyGen\Models\Schema;
 use SlytherinCz\SlyGen\Services\BootstrapGenerator;
 use SlytherinCz\SlyGen\Services\ControllerGenerator;
 use SlytherinCz\SlyGen\Services\DependencyGenerator\ControllersDIGenerator;
 use SlytherinCz\SlyGen\Services\DependencyGenerator\CredentialsGenerator;
 use SlytherinCz\SlyGen\Services\DependencyGenerator\RoutingGenerator;
 use SlytherinCz\SlyGen\Services\DependencyGenerator\ServicesGenerator;
+use SlytherinCz\SlyGen\Services\EntrypointGenerator;
 use SlytherinCz\SlyGen\Services\FileWriter;
 use SlytherinCz\SlyGen\Services\MigrationGenerator;
 use SlytherinCz\SlyGen\Services\ModelGenerator;
@@ -26,10 +28,6 @@ class GeneratorCommand extends Command
      * @var BootstrapGenerator
      */
     private $bootstrapGenerator;
-    /**
-     * @var CredentialsGenerator
-     */
-    private $dependencyGenerator;
     /**
      * @var CredentialsGenerator
      */
@@ -62,6 +60,10 @@ class GeneratorCommand extends Command
      * @var RoutingGenerator
      */
     private $routingGenerator;
+    /**
+     * @var EntrypointGenerator
+     */
+    private $entrypointGenerator;
 
     /**
      * @param SchemaFactory $schemaFactory
@@ -72,8 +74,9 @@ class GeneratorCommand extends Command
      * @param ControllersDIGenerator $controllersDIGenerator
      * @param ModelGenerator $modelGenerator
      * @param RoutingGenerator $routingGenerator
+     * @param BootstrapGenerator $bootstrapGenerator
+     * @param EntrypointGenerator $entrypointGenerator
      * @param FileWriter $fileWriter
-     * @internal param CredentialsGenerator $dependencyGenerator
      */
     public function __construct(
         SchemaFactory $schemaFactory,
@@ -84,9 +87,10 @@ class GeneratorCommand extends Command
         ControllersDIGenerator $controllersDIGenerator,
         ModelGenerator $modelGenerator,
         RoutingGenerator $routingGenerator,
+        BootstrapGenerator $bootstrapGenerator,
+        EntrypointGenerator $entrypointGenerator,
         FileWriter $fileWriter
-    )
-    {
+    ) {
         parent::__construct();
         $this->schemaFactory = $schemaFactory;
         $this->credentialsGenerator = $credentialsGenerator;
@@ -97,6 +101,8 @@ class GeneratorCommand extends Command
         $this->controllersDIGenerator = $controllersDIGenerator;
         $this->modelGenerator = $modelGenerator;
         $this->routingGenerator = $routingGenerator;
+        $this->bootstrapGenerator = $bootstrapGenerator;
+        $this->entrypointGenerator = $entrypointGenerator;
     }
 
     protected function configure()
@@ -109,31 +115,79 @@ class GeneratorCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $schema = $this->schemaFactory->fromStdClass(json_decode(file_get_contents('tmp/schema.json')));
-        $credentialsBlueprint = $this->credentialsGenerator->generate($schema);
-        $servicesBlueprint = $this->servicesGenerator->generate($schema);
-        $migrationBlueprint= $this->migrationGenerator->generate($schema);
-        $controllerBlueprints = $this->controllerGenerator->generate($schema);
-        $controllerDepenencyBlueprint = $this->controllersDIGenerator->generate($schema);
-        $modelsBlueprints = $this->modelGenerator->generate($schema);
-        $routingBlueprint = $this->routingGenerator->generate($schema);
 
+        $this->generateMigrationFiles($schema);
 
-        $this->fileWriter->write($credentialsBlueprint,$schema->getOutputFolder());
-        $this->fileWriter->write($servicesBlueprint,$schema->getOutputFolder());
-        $this->fileWriter->write($migrationBlueprint,$schema->getOutputFolder());
-        $this->fileWriter->write($migrationBlueprint,$schema->getOutputFolder());
-        $this->fileWriter->write($controllerDepenencyBlueprint,$schema->getOutputFolder());
-        foreach($controllerBlueprints as $controllerBlueprint)
-        {
-            $this->fileWriter->write($controllerBlueprint,$schema->getOutputFolder());
-        }
-        foreach ($modelsBlueprints as $modelBlueprint)
-        {
-            $this->fileWriter->write($modelBlueprint,$schema->getOutputFolder());
-        }
-        $this->fileWriter->write($routingBlueprint,$schema->getOutputFolder());
+        $this->generateDependencyInjectionFiles($schema);
+
+        $this->generateControllerFiles($schema);
+
+        $this->generateModelFiles($schema);
+
+        $this->generateBootstrapFile($schema);
+
+        $this->generateEntrypointFiles($schema);
 
 
         $output->writeln('YAY :)');
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    private function generateMigrationFiles(Schema $schema)
+    {
+        foreach ($this->migrationGenerator->generate($schema) as $migrationBlueprint) {
+            $this->fileWriter->write($migrationBlueprint, $schema->getOutputFolder());
+        }
+    }
+
+    /**
+     * @param $schema
+     */
+    private function generateDependencyInjectionFiles(Schema $schema)
+    {
+        $this->fileWriter->write($this->credentialsGenerator->generate($schema), $schema->getOutputFolder());
+        $this->fileWriter->write($this->servicesGenerator->generate($schema), $schema->getOutputFolder());
+        $this->fileWriter->write($this->controllersDIGenerator->generate($schema), $schema->getOutputFolder());
+        $this->fileWriter->write($this->routingGenerator->generate($schema), $schema->getOutputFolder());
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    private function generateControllerFiles(Schema $schema)
+    {
+        foreach ($this->controllerGenerator->generate($schema) as $controllerBlueprint) {
+            $this->fileWriter->write($controllerBlueprint, $schema->getOutputFolder());
+        }
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    private function generateModelFiles(Schema $schema)
+    {
+        foreach ($this->modelGenerator->generate($schema) as $modelBlueprint) {
+            $this->fileWriter->write($modelBlueprint, $schema->getOutputFolder());
+        }
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    private function generateBootstrapFile(Schema $schema)
+    {
+        $this->fileWriter->write($this->bootstrapGenerator->generate($schema), $schema->getOutputFolder());
+    }
+
+    /**
+     * @param Schema $schema
+     */
+    private function generateEntrypointFiles(Schema $schema)
+    {
+        foreach ($this->entrypointGenerator->generate($schema) as $entrypointBlueprint) {
+            $this->fileWriter->write($entrypointBlueprint, $schema->getOutputFolder());
+        }
     }
 }

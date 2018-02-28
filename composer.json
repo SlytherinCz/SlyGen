@@ -2,7 +2,7 @@
   "name": "slytherincz/slygen",
   "description": "CRUD REST Api generator",
   "require": {
-    "php": "~7.0.0",
+    "php": ">=7.0.0",
     "symfony/console": "3.2.6",
     "symfony/yaml": "3.2.6",
     "symfony/dependency-injection": "3.2.6",

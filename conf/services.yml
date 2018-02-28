@@ -10,6 +10,8 @@ services:
       - "@service.generator.controller_di"
       - "@service.generator.model"
       - "@service.generator.routing"
+      - "@service.generator.bootstrap"
+      - "@service.generator.entrypoint"
       - "@service.file_writer"
 
   factory.primary_key_index:
@@ -50,33 +52,33 @@ services:
   factory.resource_factory:
     class: SlytherinCz\SlyGen\Factories\ResourceFactory
     arguments:
-      - "@factory.columnCollectionFactory"
-      - "@factory.indexCollectionFactory"
-      - "@factory.optionCollectionFactory"
+      - "@factory.column_collection_factory"
+      - "@factory.index_collection_factory"
+      - "@factory.option_collection_factory"
       - "@factory.relation_collection_factory"
 
-  factory.optionCollectionFactory:
+  factory.option_collection_factory:
       class: SlytherinCz\SlyGen\Factories\OptionCollectionFactory
       arguments:
-        - "@factory.optionFactory"
+        - "@factory.option_factory"
 
-  factory.optionFactory:
+  factory.option_factory:
     class: SlytherinCz\SlyGen\Factories\OptionFactory
 
-  factory.columnCollectionFactory:
+  factory.column_collection_factory:
     class: SlytherinCz\SlyGen\Factories\ColumnCollectionFactory
     arguments:
-      - "@factory.columnFactory"
+      - "@factory.column_factory"
 
-  factory.indexCollectionFactory:
+  factory.index_collection_factory:
     class: SlytherinCz\SlyGen\Factories\IndexCollectionFactory
     arguments:
       - "@factory.index_factory"
 
-  factory.columnFactory:
+  factory.column_factory:
     class: SlytherinCz\SlyGen\Factories\ColumnFactory
 
-  service.twigLoader:
+  service.twig_loader:
     class: Twig_Loader_Filesystem
     arguments:
       "q":
@@ -85,18 +87,19 @@ services:
         - "src/Templates/Migration"
         - "src/Templates/Controller"
         - "src/Templates/Model"
+        - "src/Templates/Command"
 
-  service.twigDebug:
+  service.twig_debug:
     class: Twig_Extension_Debug
 
   service.twig:
     class: Twig_Environment
     arguments:
-      - "@service.twigLoader"
+      - "@service.twig_loader"
     calls:
       - method: addExtension
         arguments:
-        - "@service.twigDebug"
+        - "@service.twig_debug"
 
   service.file_writer:
     class: SlytherinCz\SlyGen\Services\FileWriter
@@ -106,10 +109,10 @@ services:
     arguments:
           - "@service.twig"
 
-  service.generator.bootstrap:
-    class: SlytherinCz\SlyGen\Services\BootstrapGenerator
+  service.generator.entrypoint:
+    class: SlytherinCz\SlyGen\Services\EntrypointGenerator
     arguments:
-      - "@service.twig"
+        - "@service.twig"
 
   service.generator.credentials:
       class: SlytherinCz\SlyGen\Services\DependencyGenerator\CredentialsGenerator
@@ -125,6 +128,11 @@ services:
         class: SlytherinCz\SlyGen\Services\MigrationGenerator
         arguments:
           - "@service.twig"
+
+  service.generator.bootstrap:
+          class: SlytherinCz\SlyGen\Services\BootstrapGenerator
+          arguments:
+            - "@service.twig"
 
   service.generator.controller:
         class: SlytherinCz\SlyGen\Services\ControllerGenerator

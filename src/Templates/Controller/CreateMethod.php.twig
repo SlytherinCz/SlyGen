@@ -1,1 +1,3 @@
-return {{ modelName }}::create($request->all());;
+return new Response(
+    {{ modelName }}::create($request->all())->toJson()
+);

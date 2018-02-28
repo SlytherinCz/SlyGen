@@ -23,12 +23,12 @@ class ControllersDIGenerator implements GeneratorInterface
         $this->twig_Environment = $twig_Environment;
     }
 
-    public function generate(Schema $schema) : FileBlueprint
+    public function generate(Schema $schema): FileBlueprint
     {
         return new FileBlueprint(
             'controllers.yml',
             'config',
-            $this->twig_Environment->render('controllers.yml.twig',['resources' => $schema->getResourceCollection()])
+            $this->twig_Environment->render('controllers.yml.twig', ['resources' => $schema->getResourceCollection()])
         );
 
     }

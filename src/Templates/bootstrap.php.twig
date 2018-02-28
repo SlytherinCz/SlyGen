@@ -1,13 +1,19 @@
 <?php
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Illuminate\Database\Capsule\Manager as Capsule;
+
+require_once(__DIR__."/../vendor/autoload.php");
 
 $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/..'));
-$loader->load('conf/services.yml');
-
+$loader->load('config/services.yml');
 $container->compile();
 
-$routingLoader = new Symfony\Component\Routing\Loader\YamlFileLoader();
-$routingLoader->load(__DIR__.'/config/routing.yml');
+
+$capsule = new Capsule();
+$capsule->addConnection($container->getParameterBag()->get('database'),'default');
+$capsule->bootEloquent();
+$capsule->setAsGlobal();
